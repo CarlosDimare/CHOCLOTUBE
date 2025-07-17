@@ -11,16 +11,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Python and Build EXE
+      - name: Setup Python, Install Deps, and Build
         run: |
           choco install ffmpeg --confirm
           python -m venv venv
-          venv\Scripts\activate
-          python -m pip install --upgrade pip
+          venv\Scripts\python -m pip install --upgrade pip
           venv\Scripts\pip install pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
-          venv\Scripts\python -m pyinstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg tu_script.py
+          venv\Scripts\python -m pyinstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg choclotube.py
 
-      - name: Upload artifact
+      - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
           name: exe-build

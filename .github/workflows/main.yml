@@ -19,13 +19,16 @@ jobs:
       - name: Install ffmpeg
         run: choco install ffmpeg --confirm
 
-      - name: Install dependencies
+      - name: Set up virtual environment
         run: |
+          python -m venv venv
+          venv\Scripts\activate
           python -m pip install --upgrade pip
-          python -m pip install --user pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
+          pip install pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
 
       - name: Build EXE
         run: |
+          venv\Scripts\activate
           python -m pyinstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg tu_script.py
 
       - name: Upload artifact

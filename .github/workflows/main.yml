@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
+          python -m pip install --user pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
 
       - name: Build EXE
         run: |

@@ -1,26 +1,33 @@
-name: Build EXE
+name: Build Windows EXE
 
 on:
-  workflow_dispatch:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Setup Python, Install Deps, and Build
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install FFmpeg
+        run: choco install ffmpeg --confirm
+
+      - name: Set up Python and install dependencies
         run: |
-          choco install ffmpeg --confirm
           python -m venv venv
-          venv\Scripts\python -m pip install --upgrade pip
-          venv\Scripts\pip install pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
-          venv\Scripts\python -m pyinstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg choclotube.py
+          venv\Scripts\python.exe -m pip install --upgrade pip
+          venv\Scripts\python.exe -m pip install pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
+
+      - name: Build EXE with PyInstaller
+        run: |
+          venv\Scripts\python.exe -m PyInstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg choclotube.py
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: exe-build
+          name: choclotube-exe
           path: dist/*.exe

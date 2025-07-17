@@ -2,10 +2,9 @@ name: Build Windows EXE
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
-  
+
 jobs:
   build-windows-exe:
     runs-on: windows-latest
@@ -17,14 +16,17 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install ffmpeg
+        run: choco install ffmpeg --confirm
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
+          pip install fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
 
       - name: Build EXE
         run: |
-          pyinstaller --choclotube.py
+          pyinstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg tu_script.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

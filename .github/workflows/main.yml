@@ -1,9 +1,9 @@
 name: Build Windows EXE
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -18,13 +18,11 @@ jobs:
 
       - name: Set up Python and install dependencies
         run: |
-          python -m venv venv
-          venv\Scripts\python.exe -m pip install --upgrade pip
-          venv\Scripts\python.exe -m pip install pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
+          python -m pip install --upgrade pip
+          pip install pyinstaller fastapi uvicorn yt-dlp nest_asyncio ffmpeg-python
 
       - name: Build EXE with PyInstaller
-        run: |
-          venv\Scripts\python.exe -m PyInstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg choclotube.py
+        run: pyinstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg choclotube.py
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4

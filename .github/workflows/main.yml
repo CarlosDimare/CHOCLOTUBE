@@ -27,7 +27,7 @@ jobs:
           pyinstaller --choclotube.py
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: exe-build
           path: dist/*.exe

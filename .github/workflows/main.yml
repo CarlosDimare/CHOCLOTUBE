@@ -6,30 +6,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-windows-exe:
+  build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-
-      - name: Install ffmpeg
-        run: choco install ffmpeg --confirm
-
-      - name: Set up virtual environment
+      - name: Setup Python and Build EXE
         run: |
+          choco install ffmpeg --confirm
           python -m venv venv
           venv\Scripts\activate
           python -m pip install --upgrade pip
-          pip install pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
-
-      - name: Build EXE
-        run: |
-          venv\Scripts\activate
-          python -m pyinstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg tu_script.py
+          venv\Scripts\pip install pyinstaller fastapi uvicorn nest_asyncio yt-dlp ffmpeg-python
+          venv\Scripts\python -m pyinstaller --onefile --hidden-import=yt_dlp --hidden-import=ffmpeg tu_script.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

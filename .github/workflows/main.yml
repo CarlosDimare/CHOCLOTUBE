@@ -22,7 +22,7 @@ jobs:
 
       - name: Build EXE
         run: |
-          pyinstaller --onefile tu_script.py
+          pyinstaller --choclotube.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3

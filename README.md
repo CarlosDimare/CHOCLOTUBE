@@ -1,57 +1,57 @@
 # Choclotube
 
-Choclotube is a simple web application that allows you to create and play a playlist of YouTube videos. It extracts the audio from YouTube links and lets you manage the playback queue.
+Choclotube es una aplicación web sencilla que te permite crear y reproducir una lista de videos de YouTube. Extrae el audio de los enlaces de YouTube y te permite gestionar la cola de reproducción.
 
-## Features
+## Características
 
-*   **Create Playlists from Links**: Paste multiple YouTube links to build a playlist.
-*   **Audio Playback**: Plays the audio stream from YouTube videos without the video.
-*   **Playback Controls**: Standard controls including play/pause, next, previous, and stop.
-*   **Sortable Playlist**: Drag and drop to reorder tracks in the playlist.
-*   **Volume Control** and **Progress Bar**.
-*   **Dark-themed UI**.
-*   **Total Playlist Duration**: See the total time for all tracks in the list.
+*   **Crear listas de reproducción desde enlaces**: Pega múltiples enlaces de YouTube para construir una lista de reproducción.
+*   **Reproducción de audio**: Reproduce el stream de audio de los videos de YouTube sin el video.
+*   **Controles de reproducción**: Controles estándar que incluyen reproducir/pausar, siguiente, anterior y detener.
+*   **Lista de reproducción ordenable**: Arrastra y suelta para reordenar las pistas en la lista de reproducción.
+*   **Control de volumen** y **Barra de progreso**.
+*   **Interfaz con tema oscuro**.
+*   **Duración total de la lista**: Ve el tiempo total de todas las pistas en la lista.
 
-## How to Run
+## Cómo ejecutar
 
-There are two ways to run Choclotube.
+Hay dos formas de ejecutar Choclotube.
 
-### 1. Running from Source (All Platforms)
+### 1. Ejecutar desde el código fuente (Todas las plataformas)
 
-This method requires Python 3.
+Este método requiere Python 3.
 
-1.  **Clone the repository:**
+1.  **Clona el repositorio:**
     ```bash
     git clone https://github.com/your-username/choclotube.git
     cd choclotube
     ```
 
-2.  **Install the dependencies:**
+2.  **Instala las dependencias:**
     ```bash
     pip install -r requirements.txt
     ```
-    *Note: You also need to have FFmpeg installed on your system. You can download it from [ffmpeg.org](https://ffmpeg.org/download.html).*
+    *Nota: También necesitas tener FFmpeg instalado en tu sistema. Puedes descargarlo desde [ffmpeg.org](https://ffmpeg.org/download.html).*
 
-3.  **Run the application:**
+3.  **Ejecuta la aplicación:**
     ```bash
     uvicorn choclotube:app --host 0.0.0.0 --port 7860
     ```
 
-4.  Open your web browser and go to `http://localhost:7860`.
+4.  Abre tu navegador web y ve a `http://localhost:7860`.
 
-### 2. Running the Windows Executable
+### 2. Ejecutar el ejecutable de Windows
 
-A standalone `.exe` file is built automatically via GitHub Actions.
+Un archivo `.exe` independiente se compila automáticamente a través de GitHub Actions.
 
-1.  Go to the "Actions" tab of this repository.
-2.  Find the latest successful workflow run for the `main` branch.
-3.  Download the `choclotube-exe` artifact.
-4.  Unzip the downloaded file and run `choclotube.exe`. This will open the application in your default web browser.
+1.  Ve a la pestaña "Actions" de este repositorio.
+2.  Encuentra la última ejecución de flujo de trabajo exitosa para la rama `main`.
+3.  Descarga el artefacto `choclotube-exe`.
+4.  Descomprime el archivo descargado y ejecuta `choclotube.exe`. Esto abrirá la aplicación en tu navegador web predeterminado.
 
-## Technologies Used
+## Tecnologías utilizadas
 
 *   **Backend**: FastAPI, Uvicorn
-*   **Audio Extraction**: yt-dlp
+*   **Extracción de audio**: yt-dlp
 *   **Frontend**: HTML5, CSS3, JavaScript
-*   **UI Components**: SortableJS for the draggable playlist.
-*   **Packaging**: PyInstaller (for the Windows executable).
+*   **Componentes de UI**: SortableJS para la lista de reproducción arrastrable.
+*   **Empaquetado**: PyInstaller (para el ejecutable de Windows).

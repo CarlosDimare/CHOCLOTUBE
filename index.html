@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHOCLOTUBE Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        :root {
+            --primary: #FFD700;         /* Amarillo maíz */
+            --primary-light: #FFEA00;   /* Amarillo más claro */
+            --primary-dark: #D4AF37;    /* Amarillo más oscuro para contraste */
+            --secondary: #4CAF50;       /* Verde hojas de maíz */
+            --secondary-light: #81C784; /* Verde más claro */
+            --background: rgba(0, 0, 0, 0.85);      /* Fondo negro con transparencia */
+            --surface: rgba(26, 26, 26, 0.8);         /* Gris muy oscuro con transparencia */
+            --surface-alt: rgba(45, 45, 45, 0.8);     /* Gris oscuro con transparencia */
+            --text: #e0e0e0;            /* Texto gris claro */
+            --text-secondary: #aaaaaa;  /* Texto secundario */
+            --text-on-yellow: #333333;  /* Texto sobre fondo amarillo */
+            --text-on-green: #FFFFFF;   /* Texto sobre fondo verde */
+            --error: #FFA000;           /* Amarillo oscuro para errores */
+            --success: #4CAF50;         /* Verde para éxito */
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            background-image: url('https://raw.githubusercontent.com/CarlosDimare/CHOCLOTUBE/main/fondo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: #0f0f0f;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+
+        .glass-panel {
+            background-color: var(--surface);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Styles from snippet */
+        .playlist-item-title {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+        
+        .result-duration {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .result-add {
+            background: var(--secondary);
+            color: var(--text-on-green);
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .result-add:hover {
+            background: var(--secondary-light);
+            transform: scale(1.05);
+        }
+        
+        .current-info {
+            margin-top: 20px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: var(--surface-alt);
+            border-radius: 10px;
+            margin: 10px 0;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        
+        .delete-btn {
+            background: var(--error);
+            color: var(--text-on-yellow);
+            border: none;
+            border-radius: 8px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+        
+        .now-playing {
+            background: var(--surface-alt);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .now-playing-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-light);
+            word-break: break-word;
+            line-height: 1.3;
+        }
+        
+        .now-playing-time {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--secondary);
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* Helper Classes */
+        .playing { 
+            background: linear-gradient(90deg, rgba(234, 179, 8, 0.2) 0%, rgba(234, 179, 8, 0.05) 100%) !important; 
+            border-left: 4px solid var(--primary) !important;
+        }
+        .selected {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-left: 4px solid #3b82f6 !important;
+        }
+        .playlist-item { 
+            transition: all 0.2s ease; 
+            border-left: 4px solid transparent;
+            background-color: rgba(255,255,255,0.02);
+        }
+        .playlist-item:hover { 
+            background-color: rgba(255, 255, 255, 0.08); 
+            border-left-color: var(--primary);
+        }
+        
+        .logo-container img {
+            filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.3));
+        }
+        
+        .control-btn { transition: all 0.15s ease; }
+        .control-btn:hover { transform: scale(1.1); filter: brightness(1.2); }
+        .control-btn:active { transform: scale(0.95); }
+
+        .platform-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        .badge-youtube { background: #ff0000; color: white; }
+        .badge-facebook { background: #1877f2; color: white; }
+        .badge-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; }
+        .badge-twitter { background: #000000; color: white; border: 1px solid #333; }
+        .badge-tiktok { background: #000000; color: #00f2ea; border: 1px solid #333; }
+        .badge-other { background: #6b7280; color: white; }
+
+        .tab-active {
+            background: var(--primary) !important;
+            color: black !important;
+            font-weight: bold;
+        }
+        
+        .trim-region {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            background: rgba(234, 179, 8, 0.3);
+            pointer-events: none;
+        }
+        
+        .time-input {
+            width: 60px;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #444;
+            color: white;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <header class="text-center mb-8 logo-container">
+            <img src="https://raw.githubusercontent.com/CarlosDimare/CHOCLOTUBE/main/logo.jpg" 
+                 alt="CHOCLOTUBE" 
+                 class="h-32 mx-auto rounded-xl mb-4 border-2 border-yellow-600/50 shadow-2xl">
+            <div class="inline-block px-4 py-1 rounded-full bg-black/60 backdrop-blur text-yellow-500 text-xs tracking-widest uppercase border border-yellow-900/50">
+                Media Playlist Manager
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Left Column: Input + Search -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Smart Input Section -->
+                <div class="glass-panel rounded-xl p-5 shadow-xl">
+                    <h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-yellow-400">
+                        <span>📝</span> Input Inteligente
+                    </h2>
+                    <p class="text-gray-400 text-xs mb-3">Pega texto con enlaces múltiples (YouTube, IG, TikTok, etc).</p>
+                    <textarea id="smartInput" rows="5" placeholder="Pega aquí tu texto con enlaces mezclados..."
+                        class="w-full bg-black/40 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-yellow-500 resize-none placeholder-gray-600 text-gray-200"></textarea>
+                    
+                    <div id="detectedCounts" class="flex flex-wrap gap-2 mt-3 text-xs">
+                        <span class="text-gray-500">0 links detectados</span>
+                    </div>
+                    
+                    <button onclick="addFromSmartInput()" class="w-full mt-4 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold px-4 py-2.5 rounded-lg text-sm transition-all shadow-lg">
+                        ➕ Agregar a Playlists
+                    </button>
+                </div>
+
+                <!-- YouTube Search Section -->
+                <div class="glass-panel rounded-xl p-5 shadow-xl">
+                    <h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-red-500">
+                        <span>🔎</span> Buscar en YouTube
+                    </h2>
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="searchQuery" placeholder="Buscar videos..."
+                            onkeypress="if(event.key==='Enter')searchVideos()"
+                            class="flex-1 bg-black/40 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500 text-gray-200">
+                        <button onclick="searchVideos()" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg text-sm font-bold text-white shadow-lg transition-colors">
+                            🔎
+                        </button>
+                    </div>
+                    <div id="searchResults" class="space-y-2 max-h-64 overflow-y-auto pr-1">
+                        <p class="text-gray-500 text-center py-4 text-sm">Configura 'apiKey' en el código</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Column: YouTube Player + Playlist -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="glass-panel rounded-xl p-5 shadow-xl border-t-4 border-t-red-600">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="platform-badge badge-youtube">YouTube</span>
+                        <h2 class="text-lg font-bold text-gray-100">Reproductor</h2>
+                    </div>
+                    
+                    <!-- YouTube Player -->
+                    <div id="ytPlayerContainer" class="bg-black rounded-lg overflow-hidden mb-4 shadow-2xl border border-gray-800 relative aspect-video">
+                        <div id="noMediaYT" class="absolute inset-0 flex items-center justify-center text-gray-600 text-center px-4">
+                            <div class="flex flex-col items-center">
+                                <span class="text-4xl mb-2 opacity-30">▶</span>
+                                <span class="text-sm">Selecciona un video</span>
+                            </div>
+                        </div>
+                        <div id="youtubePlayer" class="absolute inset-0 w-full h-full"></div>
+                    </div>
+                    
+                    <!-- Now Playing Info (Styled) -->
+                    <div id="nowPlayingYT" class="now-playing">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span id="ytStatusBadge" class="text-yellow-500 text-xs font-bold tracking-wider">⏸ LISTO</span>
+                            <span id="ytIndexDisplay" class="text-xs text-gray-500 ml-auto font-mono"></span>
+                        </div>
+                        <p id="ytCurrentTitle" class="now-playing-title">Nada seleccionado</p>
+                        
+                        <!-- Progress Bar -->
+                        <div id="ytProgress" class="hidden">
+                            <div class="progress-container" onclick="seekYouTube(event)" id="progressContainer">
+                                <div id="trimRegion" class="trim-region"></div>
+                                <div id="ytProgressBar" class="progress-bar" style="width: 0%"></div>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-gray-400 font-mono">
+                                <span id="ytCurrentTime">0:00</span>
+                                <span id="ytDuration">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trim Controls -->
+                    <div id="trimControls" class="mb-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700 hidden">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-yellow-500 uppercase tracking-wide">✂️ Recortar</span>
+                            <button onclick="resetTrim()" class="text-xs text-gray-400 hover:text-white transition-colors">↺ Reset</button>
+                        </div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="flex items-center gap-1">
+                                <span class="text-xs text-green-400 font-bold">IN:</span>
+                                <input type="text" id="trimStart" value="0:00" 
+                                    class="time-input rounded px-1 py-0.5 text-xs focus:outline-none focus:border-green-500"
+                                    onchange="updateTrimFromInput('start')">
+                                <button onclick="setTrimFromCurrent('start')" class="text-xs bg-green-600/80 hover:bg-green-600 px-2 py-0.5 rounded text-white" title="Marcar actual">📍</button>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-xs text-red-400 font-bold">OUT:</span>
+                                <input type="text" id="trimEnd" value="0:00" 
+                                    class="time-input rounded px-1 py-0.5 text-xs focus:outline-none focus:border-red-500"
+                                    onchange="updateTrimFromInput('end')">
+                                <button onclick="setTrimFromCurrent('end')" class="text-xs bg-red-600/80 hover:bg-red-600 px-2 py-0.5 rounded text-white" title="Marcar actual">📍</button>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span id="trimDuration" class="text-xs text-gray-500">Duración: --:--</span>
+                            <button onclick="saveTrim()" class="result-add" style="background: var(--primary); color: black;">💾 Guardar</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Controls -->
+                    <div class="flex justify-center items-center gap-6 mb-4">
+                        <button onclick="ytPlayPrevious()" class="control-btn bg-gray-700/80 hover:bg-gray-600 p-3 rounded-full text-xl border border-gray-600" title="Anterior">⏮️</button>
+                        <button onclick="ytTogglePlay()" id="ytPlayPauseBtn" class="control-btn bg-red-600 hover:bg-red-500 p-4 rounded-full text-2xl shadow-lg shadow-red-900/50 text-white" title="Play/Pause">▶️</button>
+                        <button onclick="ytPlayNext()" class="control-btn bg-gray-700/80 hover:bg-gray-600 p-3 rounded-full text-xl border border-gray-600" title="Siguiente">⏭️</button>
+                    </div>
+                    
+                    <!-- YouTube Playlist -->
+                    <div class="border-t border-gray-700/50 pt-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-bold text-gray-300">Playlist</span>
+                            <div class="flex items-center gap-2">
+                                <span id="ytPlaylistCount" class="text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-mono">0</span>
+                                <button onclick="refreshYouTubeTitles()" class="text-blue-400 hover:text-blue-300 text-xs transition-colors" title="Actualizar títulos">🔄</button>
+                                <button onclick="clearYTPlaylist()" class="text-red-400 hover:text-red-300 text-xs transition-colors">🗑️</button>
+                            </div>
+                        </div>
+                        <input type="text" id="ytPlaylistSearch" placeholder="🔍 Filtrar..." oninput="renderYTPlaylist()"
+                            class="w-full bg-black/30 border border-gray-700 rounded px-2 py-1 text-xs mb-3 focus:outline-none focus:border-red-500 text-gray-300">
+                        <div id="ytPlaylistContainer" class="space-y-1 max-h-60 overflow-y-auto pr-1">
+                            <p class="text-gray-500 text-center py-6 text-xs italic">No hay videos en la lista</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Social Media -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="glass-panel rounded-xl p-5 shadow-xl border-t-4 border-t-blue-500">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-xl">📱</span>
+                        <h2 class="text-lg font-bold text-gray-100">Redes Sociales</h2>
+                    </div>
+                    
+                    <!-- Platform Tabs -->
+                    <div class="flex gap-1 mb-4 p-1 bg-black/40 rounded-lg">
+                        <button onclick="switchSocialTab('facebook')" id="tabFacebook" class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
+                            FB <span id="fbCount" class="opacity-50 text-[10px] ml-1">0</span>
+                        </button>
+                        <button onclick="switchSocialTab('instagram')" id="tabInstagram" class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
+                            IG <span id="igCount" class="opacity-50 text-[10px] ml-1">0</span>
+                        </button>
+                        <button onclick="switchSocialTab('twitter')" id="tabTwitter" class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
+                            X <span id="twCount" class="opacity-50 text-[10px] ml-1">0</span>
+                        </button>
+                        <button onclick="switchSocialTab('tiktok')" id="tabTiktok" class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
+                            TT <span id="ttCount" class="opacity-50 text-[10px] ml-1">0</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Social Embed Player -->
+                    <div id="socialEmbedContainer" class="bg-black rounded-lg overflow-hidden mb-4 min-h-[350px] flex items-center justify-center border border-gray-800">
+                        <div class="text-center px-6">
+                            <div class="text-4xl mb-2 opacity-20">📱</div>
+                            <p class="text-gray-500 text-sm">Selecciona un item</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Playlist -->
+                    <div class="border-t border-gray-700/50 pt-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span id="socialPlaylistTitle" class="text-sm font-bold text-gray-300">Lista</span>
+                            <button onclick="clearCurrentSocialPlaylist()" class="text-red-400 hover:text-red-300 text-xs">🗑️</button>
+                        </div>
+                        <div id="socialPlaylistContainer" class="space-y-1 max-h-60 overflow-y-auto pr-1">
+                            <p class="text-gray-500 text-center py-6 text-xs italic">Lista vacía</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script async src="//www.instagram.com/embed.js"></script>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0" nonce="abc123"></script>
+
+    <script>
+        // ============ CONFIGURACIÓN ============
+        const apiKey = "AIzaSyBOgvS0tlbHy7cokWzX_jdzswGu9Ffs4fU"; 
+
+        // ============ STATE ============
+        let ytPlaylist = [];
+        let ytCurrentIndex = -1;
+        let ytSelectedIndex = -1;
+        let ytPlayer = null;
+        let ytReady = false;
+        let ytIsPlaying = false;
+        let progressInterval = null;
+
+        // Trim state
+        let currentTrimStart = 0;
+        let currentTrimEnd = 0;
+        let videoDuration = 0;
+
+        let socialPlaylists = {
+            facebook: [],
+            instagram: [],
+            twitter: [],
+            tiktok: []
+        };
+        let currentSocialTab = 'facebook';
+        let currentSocialIndex = { facebook: -1, instagram: -1, twitter: -1, tiktok: -1 };
+
+        // ============ INIT ============
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPlaylists();
+            document.getElementById('smartInput').addEventListener('input', updateDetectedCounts);
+            switchSocialTab('facebook');
+        });
+
+        // ============ YOUTUBE IFRAME API ============
+        function onYouTubeIframeAPIReady() {
+            ytReady = true;
+        }
+
+        function createYouTubePlayer(videoId, autoplay = false, startTime = 0) {
+            document.getElementById('noMediaYT').classList.add('hidden');
+            document.getElementById('ytProgress').classList.remove('hidden');
+            document.getElementById('trimControls').classList.remove('hidden');
+            
+            if (ytPlayer) {
+                ytPlayer.destroy();
+            }
+            
+            ytPlayer = new YT.Player('youtubePlayer', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: { 
+                    'autoplay': autoplay ? 1 : 0, 
+                    'controls': 0, 
+                    'rel': 0, 
+                    'modestbranding': 1,
+                    'start': Math.floor(startTime)
+                },
+                events: {
+                    'onReady': (e) => {
+                        videoDuration = e.target.getDuration();
+                        initTrimControls();
+                        if (autoplay) {
+                            e.target.playVideo();
+                            ytIsPlaying = true;
+                            updateYTButton(true);
+                            updateStatusBadge('playing');
+                        } else {
+                            ytIsPlaying = false;
+                            updateYTButton(false);
+                            updateStatusBadge('ready');
+                        }
+                        startProgressUpdate();
+                    },
+                    'onStateChange': onYTStateChange,
+                    'onError': () => { setTimeout(ytPlayNext, 2000); }
+                }
+            });
+        }
+
+        function onYTStateChange(event) {
+            switch(event.data) {
+                case YT.PlayerState.PLAYING:
+                    ytIsPlaying = true;
+                    updateYTButton(true);
+                    updateStatusBadge('playing');
+                    startProgressUpdate();
+                    break;
+                case YT.PlayerState.PAUSED:
+                    ytIsPlaying = false;
+                    updateYTButton(false);
+                    updateStatusBadge('paused');
+                    stopProgressUpdate();
+                    break;
+                case YT.PlayerState.ENDED:
+                    ytIsPlaying = false;
+                    updateYTButton(false);
+                    updateStatusBadge('ended');
+                    stopProgressUpdate();
+                    ytPlayNext();
+                    break;
+            }
+        }
+
+        function updateStatusBadge(state) {
+            const badge = document.getElementById('ytStatusBadge');
+            switch(state) {
+                case 'playing':
+                    badge.textContent = '▶ REPRODUCIENDO';
+                    badge.className = 'text-green-400 text-xs font-bold';
+                    break;
+                case 'paused':
+                    badge.textContent = '⏸ PAUSADO';
+                    badge.className = 'text-yellow-500 text-xs font-bold';
+                    break;
+                case 'ready':
+                    badge.textContent = '⏸ LISTO';
+                    badge.className = 'text-blue-400 text-xs font-bold';
+                    break;
+                case 'ended':
+                    badge.textContent = '⏹ FINALIZADO';
+                    badge.className = 'text-gray-500 text-xs font-bold';
+                    break;
+            }
+        }
+
+        function updateYTButton(playing) { document.getElementById('ytPlayPauseBtn').textContent = playing ? '⏸️' : '▶️'; }
+
+        function startProgressUpdate() {
+            stopProgressUpdate();
+            progressInterval = setInterval(() => {
+                if (!ytPlayer?.getCurrentTime) return;
+                const current = ytPlayer.getCurrentTime();
+                const duration = ytPlayer.getDuration();
+                
+                if (duration > 0) {
+                    const item = ytPlaylist[ytCurrentIndex];
+                    const trimEnd = item?.trimEnd || duration;
+                    
+                    if (current >= trimEnd && ytIsPlaying) {
+                        ytPlayer.pauseVideo();
+                        ytPlayNext();
+                        return;
+                    }
+                    
+                    document.getElementById('ytProgressBar').style.width = (current / duration * 100) + '%';
+                    document.getElementById('ytCurrentTime').textContent = formatTime(current);
+                    document.getElementById('ytDuration').textContent = formatTime(duration);
+                    
+                    updateTrimRegionDisplay();
+                }
+            }, 250);
+        }
+
+        function stopProgressUpdate() { if (progressInterval) { clearInterval(progressInterval); progressInterval = null; } }
+
+        function formatTime(s) { 
+            const mins = Math.floor(s / 60);
+            const secs = Math.floor(s % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function parseTime(str) {
+            const parts = str.split(':');
+            if (parts.length === 2) {
+                return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+            } else if (parts.length === 3) {
+                return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
+            }
+            return 0;
+        }
+
+        function seekYouTube(e) {
+            if (!ytPlayer?.getDuration) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            ytPlayer.seekTo(ytPlayer.getDuration() * percent, true);
+        }
+
+        // ============ TRIM CONTROLS ============
+        function initTrimControls() {
+            const item = ytPlaylist[ytCurrentIndex];
+            currentTrimStart = item?.trimStart || 0;
+            currentTrimEnd = item?.trimEnd || videoDuration;
+            
+            document.getElementById('trimStart').value = formatTime(currentTrimStart);
+            document.getElementById('trimEnd').value = formatTime(currentTrimEnd);
+            updateTrimDuration();
+            updateTrimRegionDisplay();
+        }
+
+        function updateTrimRegionDisplay() {
+            if (!videoDuration) return;
+            const region = document.getElementById('trimRegion');
+            const startPercent = (currentTrimStart / videoDuration) * 100;
+            const endPercent = (currentTrimEnd / videoDuration) * 100;
+            region.style.left = startPercent + '%';
+            region.style.width = (endPercent - startPercent) + '%';
+        }
+
+        function updateTrimDuration() {
+            const duration = currentTrimEnd - currentTrimStart;
+            document.getElementById('trimDuration').textContent = `Duración: ${formatTime(duration)}`;
+        }
+
+        function updateTrimFromInput(type) {
+            if (type === 'start') {
+                currentTrimStart = parseTime(document.getElementById('trimStart').value);
+                if (currentTrimStart >= currentTrimEnd) {
+                    currentTrimStart = currentTrimEnd - 1;
+                    document.getElementById('trimStart').value = formatTime(currentTrimStart);
+                }
+            } else {
+                currentTrimEnd = parseTime(document.getElementById('trimEnd').value);
+                if (currentTrimEnd <= currentTrimStart) {
+                    currentTrimEnd = currentTrimStart + 1;
+                    document.getElementById('trimEnd').value = formatTime(currentTrimEnd);
+                }
+                if (currentTrimEnd > videoDuration) {
+                    currentTrimEnd = videoDuration;
+                    document.getElementById('trimEnd').value = formatTime(currentTrimEnd);
+                }
+            }
+            updateTrimDuration();
+            updateTrimRegionDisplay();
+        }
+
+        function setTrimFromCurrent(type) {
+            if (!ytPlayer?.getCurrentTime) return;
+            const current = ytPlayer.getCurrentTime();
+            
+            if (type === 'start') {
+                currentTrimStart = current;
+                document.getElementById('trimStart').value = formatTime(current);
+            } else {
+                currentTrimEnd = current;
+                document.getElementById('trimEnd').value = formatTime(current);
+            }
+            updateTrimDuration();
+            updateTrimRegionDisplay();
+        }
+
+        function resetTrim() {
+            currentTrimStart = 0;
+            currentTrimEnd = videoDuration;
+            document.getElementById('trimStart').value = formatTime(0);
+            document.getElementById('trimEnd').value = formatTime(videoDuration);
+            updateTrimDuration();
+            updateTrimRegionDisplay();
+        }
+
+        function saveTrim() {
+            if (ytCurrentIndex < 0) return;
+            
+            ytPlaylist[ytCurrentIndex].trimStart = currentTrimStart;
+            ytPlaylist[ytCurrentIndex].trimEnd = currentTrimEnd;
+            savePlaylists();
+            renderYTPlaylist();
+            
+            alert(`✅ Recorte guardado: ${formatTime(currentTrimStart)} - ${formatTime(currentTrimEnd)}`);
+        }
+
+        // ============ YOUTUBE CONTROLS ============
+        function ytSelectItem(index) {
+            if (index < 0 || index >= ytPlaylist.length) return;
+            ytCurrentIndex = index;
+            ytSelectedIndex = index;
+            const item = ytPlaylist[index];
+            
+            document.getElementById('ytCurrentTitle').textContent = item.title;
+            document.getElementById('ytIndexDisplay').textContent = `${index + 1} de ${ytPlaylist.length}`;
+            
+            const videoId = extractYouTubeId(item.url);
+            if (videoId && ytReady) {
+                createYouTubePlayer(videoId, false, item.trimStart || 0);
+            }
+            renderYTPlaylist();
+        }
+
+        function ytPlayItem(index) {
+            if (index < 0 || index >= ytPlaylist.length) return;
+            ytCurrentIndex = index;
+            ytSelectedIndex = index;
+            const item = ytPlaylist[index];
+            
+            document.getElementById('ytCurrentTitle').textContent = item.title;
+            document.getElementById('ytIndexDisplay').textContent = `${index + 1} de ${ytPlaylist.length}`;
+            
+            const videoId = extractYouTubeId(item.url);
+            if (videoId && ytReady) {
+                createYouTubePlayer(videoId, true, item.trimStart || 0);
+            }
+            renderYTPlaylist();
+        }
+
+        function ytTogglePlay() {
+            if (ytCurrentIndex === -1 && ytPlaylist.length > 0) {
+                ytPlayItem(0);
+                return;
+            }
+            if (!ytPlayer) return;
+            const state = ytPlayer.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                ytPlayer.pauseVideo();
+            } else {
+                const item = ytPlaylist[ytCurrentIndex];
+                const currentTime = ytPlayer.getCurrentTime();
+                const trimStart = item?.trimStart || 0;
+                if (currentTime < trimStart) {
+                    ytPlayer.seekTo(trimStart, true);
+                }
+                ytPlayer.playVideo();
+            }
+        }
+
+        function ytPlayNext() {
+            if (ytPlaylist.length === 0) return;
+            const nextIndex = ytCurrentIndex === -1 ? 0 : (ytCurrentIndex + 1) % ytPlaylist.length;
+            ytPlayItem(nextIndex);
+        }
+
+        function ytPlayPrevious() {
+            if (ytPlaylist.length === 0) return;
+            const prevIndex = ytCurrentIndex <= 0 ? ytPlaylist.length - 1 : ytCurrentIndex - 1;
+            ytPlayItem(prevIndex);
+        }
+
+        // ============ LINK PARSING & CLASSIFICATION ============
+        function parseLinksFromText(input) {
+            const urlRegex = /https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
+            return [...new Set(input.match(urlRegex) || [])];
+        }
+
+        function classifyLink(url) {
+            const u = url.toLowerCase();
+            if (u.includes('youtube.com') || u.includes('youtu.be')) return 'youtube';
+            if (u.includes('facebook.com') || u.includes('fb.watch') || u.includes('fb.com')) return 'facebook';
+            if (u.includes('instagram.com') || u.includes('instagr.am')) return 'instagram';
+            if (u.includes('twitter.com') || u.includes('x.com')) return 'twitter';
+            if (u.includes('tiktok.com') || u.includes('vm.tiktok')) return 'tiktok';
+            return 'other';
+        }
+
+        function extractYouTubeId(url) {
+            const match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/);
+            return (match && match[7].length === 11) ? match[7] : null;
+        }
+
+        function updateDetectedCounts() {
+            const links = parseLinksFromText(document.getElementById('smartInput').value);
+            const counts = { youtube: 0, facebook: 0, instagram: 0, twitter: 0, tiktok: 0, other: 0 };
+            links.forEach(link => counts[classifyLink(link)]++);
+            
+            const container = document.getElementById('detectedCounts');
+            if (links.length === 0) {
+                container.innerHTML = '<span class="text-gray-500">0 links detectados</span>';
+            } else {
+                let html = '';
+                if (counts.youtube) html += `<span class="platform-badge badge-youtube">YT: ${counts.youtube}</span>`;
+                if (counts.facebook) html += `<span class="platform-badge badge-facebook">FB: ${counts.facebook}</span>`;
+                if (counts.instagram) html += `<span class="platform-badge badge-instagram">IG: ${counts.instagram}</span>`;
+                if (counts.twitter) html += `<span class="platform-badge badge-twitter">X: ${counts.twitter}</span>`;
+                if (counts.tiktok) html += `<span class="platform-badge badge-tiktok">TT: ${counts.tiktok}</span>`;
+                if (counts.other) html += `<span class="platform-badge badge-other">Otros: ${counts.other}</span>`;
+                container.innerHTML = html || '<span class="text-gray-500">0 links válidos</span>';
+            }
+        }
+
+        async function addFromSmartInput() {
+            const links = parseLinksFromText(document.getElementById('smartInput').value);
+            if (links.length === 0) { alert('No se detectaron links'); return; }
+
+            const btn = document.querySelector('[onclick="addFromSmartInput()"]');
+            btn.textContent = '⏳ Procesando...';
+            btn.disabled = true;
+
+            const classified = { youtube: [], facebook: [], instagram: [], twitter: [], tiktok: [] };
+            
+            links.forEach(url => {
+                const platform = classifyLink(url);
+                if (platform !== 'other') {
+                    classified[platform].push(url);
+                }
+            });
+
+            if (classified.youtube.length > 0) {
+                if (apiKey) {
+                    try {
+                        const videoIds = classified.youtube.map(url => extractYouTubeId(url)).filter(id => id);
+                        const titles = await fetchYouTubeTitles(videoIds.join(','));
+                        classified.youtube.forEach(url => {
+                            const id = extractYouTubeId(url);
+                            addToYTPlaylist(titles[id] || `YouTube Video (${id})`, url);
+                        });
+                    } catch (e) {
+                        classified.youtube.forEach(url => {
+                            const id = extractYouTubeId(url);
+                            addToYTPlaylist(`YouTube Video (${id})`, url);
+                        });
+                    }
+                } else {
+                    classified.youtube.forEach(url => {
+                        const id = extractYouTubeId(url);
+                        addToYTPlaylist(`YouTube Video (${id})`, url);
+                    });
+                }
+            }
+
+            ['facebook', 'instagram', 'twitter', 'tiktok'].forEach(platform => {
+                classified[platform].forEach(url => addToSocialPlaylist(platform, url));
+            });
+
+            document.getElementById('smartInput').value = '';
+            updateDetectedCounts();
+            btn.textContent = '➕ Agregar a Playlists';
+            btn.disabled = false;
+
+            const total = Object.values(classified).reduce((a, b) => a + b.length, 0);
+            alert(`✅ ${total} links agregados!`);
+        }
+
+        async function fetchYouTubeTitles(videoIds) {
+            const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoIds}&key=${apiKey}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            const titles = {};
+            data.items?.forEach(item => { titles[item.id] = item.snippet.title; });
+            return titles;
+        }
+
+        // ============ YOUTUBE PLAYLIST ============
+        function addToYTPlaylist(title, url) {
+            if (ytPlaylist.some(item => item.url === url)) return false;
+            ytPlaylist.push({ 
+                id: Date.now() + Math.random(), 
+                title, 
+                url,
+                trimStart: 0,
+                trimEnd: null
+            });
+            savePlaylists();
+            renderYTPlaylist();
+            return true;
+        }
+
+        function removeFromYTPlaylist(id) {
+            const index = ytPlaylist.findIndex(item => item.id === id);
+            if (index > -1) {
+                ytPlaylist.splice(index, 1);
+                if (index === ytCurrentIndex) ytCurrentIndex = -1;
+                else if (index < ytCurrentIndex) ytCurrentIndex--;
+                savePlaylists();
+                renderYTPlaylist();
+            }
+        }
+
+        function clearYTPlaylist() {
+            if (confirm('¿Eliminar toda la playlist de YouTube?')) {
+                ytPlaylist = [];
+                ytCurrentIndex = -1;
+                savePlaylists();
+                renderYTPlaylist();
+                if (ytPlayer) ytPlayer.destroy();
+                document.getElementById('noMediaYT').classList.remove('hidden');
+                document.getElementById('ytProgress').classList.add('hidden');
+                document.getElementById('trimControls').classList.add('hidden');
+                document.getElementById('ytCurrentTitle').textContent = 'Nada seleccionado';
+                document.getElementById('ytIndexDisplay').textContent = '';
+                updateStatusBadge('ready');
+            }
+        }
+
+        function renderYTPlaylist() {
+            const container = document.getElementById('ytPlaylistContainer');
+            const search = document.getElementById('ytPlaylistSearch').value.toLowerCase();
+            document.getElementById('ytPlaylistCount').textContent = ytPlaylist.length;
+
+            if (ytPlaylist.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-6 text-xs italic">Lista vacía</p>';
+                return;
+            }
+
+            const filtered = ytPlaylist.filter(item => item.title.toLowerCase().includes(search) || item.url.toLowerCase().includes(search));
+            const nextIndex = ytCurrentIndex >= 0 ? (ytCurrentIndex + 1) % ytPlaylist.length : 0;
+
+            container.innerHTML = filtered.map(item => {
+                const realIndex = ytPlaylist.findIndex(p => p.id === item.id);
+                const isPlaying = realIndex === ytCurrentIndex && ytIsPlaying;
+                const isSelected = realIndex === ytCurrentIndex && !ytIsPlaying;
+                const isNext = realIndex === nextIndex && ytCurrentIndex !== -1;
+                const hasTrim = item.trimStart > 0 || (item.trimEnd && item.trimEnd < videoDuration);
+                
+                let statusClass = '';
+                if (isPlaying) statusClass = 'playing';
+                else if (isSelected) statusClass = 'selected';
+                else if (isNext) statusClass = 'next-up';
+                
+                let badge = '#' + (realIndex + 1);
+                if (isPlaying) badge = '▶';
+                else if (isSelected) badge = '⏸';
+                else if (isNext) badge = '⏭';
+                
+                const trimInfo = hasTrim ? `<span class="text-yellow-400 text-[10px]">✂️ ${formatTime(item.trimStart)} - ${formatTime(item.trimEnd || 0)}</span>` : '';
+                
+                return `
+                    <div class="playlist-item flex items-start gap-2 p-2 rounded cursor-pointer ${statusClass}" 
+                         onclick="ytSelectItem(${realIndex})">
+                        <span class="text-xs mt-0.5 ${isPlaying ? 'text-green-400' : 'text-gray-400'}">${isPlaying ? '🔊' : isSelected ? '⏸' : '▶️'}</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="queue-indicator text-[9px]">${badge}</span>
+                                ${trimInfo}
+                            </div>
+                            <p class="playlist-item-title mt-1">${escapeHtml(item.title)}</p>
+                        </div>
+                        <button onclick="event.stopPropagation(); removeFromYTPlaylist(${item.id})" class="delete-btn">✖️</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function refreshYouTubeTitles() {
+            if (!apiKey) { alert('Configura tu API Key primero en el código'); return; }
+            
+            const genericItems = ytPlaylist.filter(item => item.title.startsWith('YouTube Video ('));
+            if (genericItems.length === 0) { alert('Todos los videos ya tienen títulos reales'); return; }
+
+            try {
+                const videoIds = genericItems.map(item => extractYouTubeId(item.url)).filter(id => id);
+                const titles = await fetchYouTubeTitles(videoIds.join(','));
+                
+                ytPlaylist.forEach(item => {
+                    const id = extractYouTubeId(item.url);
+                    if (id && titles[id]) item.title = titles[id];
+                });
+                
+                savePlaylists();
+                renderYTPlaylist();
+                if (ytCurrentIndex >= 0) {
+                    document.getElementById('ytCurrentTitle').textContent = ytPlaylist[ytCurrentIndex].title;
+                }
+                alert(`✅ Títulos actualizados!`);
+            } catch (e) {
+                alert('Error al actualizar: ' + e.message);
+            }
+        }
+
+        // ============ SOCIAL MEDIA PLAYLISTS ============
+        function addToSocialPlaylist(platform, url) {
+            if (socialPlaylists[platform].some(item => item.url === url)) return false;
+            
+            let title = url;
+            try {
+                const urlObj = new URL(url);
+                const path = urlObj.pathname;
+                if (platform === 'twitter') {
+                    const match = path.match(/\/(\w+)\/status\/(\d+)/);
+                    title = match ? `Tweet de @${match[1]}` : 'Tweet';
+                } else if (platform === 'instagram') {
+                    const match = path.match(/\/(p|reel|reels|tv)\/([^\/]+)/);
+                    title = match ? `Instagram ${match[1].toUpperCase()}: ${match[2]}` : 'Instagram Post';
+                } else if (platform === 'facebook') {
+                    title = 'Facebook Video';
+                } else if (platform === 'tiktok') {
+                    const match = path.match(/@([^\/]+)/);
+                    title = match ? `TikTok de @${match[1]}` : 'TikTok Video';
+                }
+            } catch (e) {}
+            
+            socialPlaylists[platform].push({ id: Date.now() + Math.random(), title, url });
+            savePlaylists();
+            updateSocialCounts();
+            if (platform === currentSocialTab) renderSocialPlaylist();
+            return true;
+        }
+
+        function removeFromSocialPlaylist(platform, id) {
+            const index = socialPlaylists[platform].findIndex(item => item.id === id);
+            if (index > -1) {
+                socialPlaylists[platform].splice(index, 1);
+                if (index === currentSocialIndex[platform]) currentSocialIndex[platform] = -1;
+                savePlaylists();
+                updateSocialCounts();
+                renderSocialPlaylist();
+            }
+        }
+
+        function clearCurrentSocialPlaylist() {
+            if (confirm(`¿Eliminar toda la playlist de ${currentSocialTab}?`)) {
+                socialPlaylists[currentSocialTab] = [];
+                currentSocialIndex[currentSocialTab] = -1;
+                savePlaylists();
+                updateSocialCounts();
+                renderSocialPlaylist();
+                document.getElementById('socialEmbedContainer').innerHTML = '<div class="text-center px-6"><p class="text-gray-500 text-sm">Selecciona un item</p></div>';
+            }
+        }
+
+        function switchSocialTab(platform) {
+            currentSocialTab = platform;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('tab-active'));
+            document.getElementById('tab' + platform.charAt(0).toUpperCase() + platform.slice(1)).classList.add('tab-active');
+            
+            const names = { facebook: '📘 Facebook', instagram: '📷 Instagram', twitter: '🐦 Twitter/X', tiktok: '🎵 TikTok' };
+            document.getElementById('socialPlaylistTitle').textContent = names[platform];
+            
+            renderSocialPlaylist();
+            
+            if (currentSocialIndex[platform] >= 0 && socialPlaylists[platform][currentSocialIndex[platform]]) {
+                embedSocialMedia(platform, socialPlaylists[platform][currentSocialIndex[platform]].url);
+            } else {
+                document.getElementById('socialEmbedContainer').innerHTML = '<div class="text-center px-6"><p class="text-gray-500 text-sm">Selecciona un item</p></div>';
+            }
+        }
+
+        function updateSocialCounts() {
+            document.getElementById('fbCount').textContent = socialPlaylists.facebook.length;
+            document.getElementById('igCount').textContent = socialPlaylists.instagram.length;
+            document.getElementById('twCount').textContent = socialPlaylists.twitter.length;
+            document.getElementById('ttCount').textContent = socialPlaylists.tiktok.length;
+        }
+
+        function renderSocialPlaylist() {
+            const container = document.getElementById('socialPlaylistContainer');
+            const playlist = socialPlaylists[currentSocialTab];
+            
+            if (playlist.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-6 text-xs italic">Lista vacía</p>';
+                return;
+            }
+
+            const badgeClass = {
+                facebook: 'badge-facebook',
+                instagram: 'badge-instagram', 
+                twitter: 'badge-twitter',
+                tiktok: 'badge-tiktok'
+            }[currentSocialTab];
+
+            container.innerHTML = playlist.map((item, index) => {
+                const isPlaying = index === currentSocialIndex[currentSocialTab];
+                return `
+                    <div class="playlist-item flex items-start gap-2 p-2 rounded cursor-pointer ${isPlaying ? 'playing' : ''}" 
+                         onclick="playSocialItem('${currentSocialTab}', ${index})">
+                        <span class="text-xs mt-0.5 ${isPlaying ? 'text-green-400' : 'text-gray-400'}">${isPlaying ? '🔊' : '▶️'}</span>
+                        <div class="flex-1 min-w-0">
+                            <span class="platform-badge ${badgeClass} text-[9px]">#${index + 1}</span>
+                            <p class="playlist-item-title mt-1">${escapeHtml(item.title)}</p>
+                            <p class="text-[10px] text-gray-500 truncate">${escapeHtml(item.url)}</p>
+                        </div>
+                        <button onclick="event.stopPropagation(); removeFromSocialPlaylist('${currentSocialTab}', ${item.id})" class="delete-btn">✖️</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function playSocialItem(platform, index) {
+            if (index < 0 || index >= socialPlaylists[platform].length) return;
+            currentSocialIndex[platform] = index;
+            const item = socialPlaylists[platform][index];
+            embedSocialMedia(platform, item.url);
+            renderSocialPlaylist();
+        }
+
+        function embedSocialMedia(platform, url) {
+            const container = document.getElementById('socialEmbedContainer');
+            
+            if (platform === 'twitter') {
+                const match = url.match(/status\/(\d+)/);
+                if (match) {
+                    container.innerHTML = `<blockquote class="twitter-tweet" data-theme="dark"><a href="${url}"></a></blockquote>`;
+                    if (window.twttr?.widgets) twttr.widgets.load(container);
+                }
+            } else if (platform === 'instagram') {
+                let videoId = '';
+                const matches = url.match(/(?:p|reel|reels|tv)\/([^\/?#&]+)/);
+                if (matches && matches[1]) {
+                    videoId = matches[1];
+                }
+
+                if (videoId) {
+                    container.innerHTML = `
+                        <div style="display: flex; justify-content: center;">
+                            <iframe 
+                                src="https://www.instagram.com/p/${videoId}/embed/captioned/" 
+                                width="100%" 
+                                height="550" 
+                                frameborder="0" 
+                                scrolling="no" 
+                                allowtransparency="true"
+                                allow="encrypted-media"
+                                style="border: 1px solid #374151; border-radius: 8px; background: white; max-width: 400px;">
+                            </iframe>
+                        </div>
+                    `;
+                } else {
+                     container.innerHTML = `
+                        <div class="p-4 text-center">
+                            <p class="text-gray-400 mb-2">No se pudo detectar ID del video</p>
+                            <a href="${url}" target="_blank" class="text-yellow-400 hover:underline">Abrir en Instagram ↗</a>
+                        </div>`;
+                }
+            } else if (platform === 'facebook') {
+                const encodedUrl = encodeURIComponent(url);
+                container.innerHTML = `<iframe src="https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=false&width=350" 
+                    style="width:100%;height:300px;border:none;overflow:hidden" scrolling="no" frameborder="0" 
+                    allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>`;
+            } else if (platform === 'tiktok') {
+                const match = url.match(/video\/(\d+)/);
+                if (match) {
+                    container.innerHTML = `
+                        <iframe 
+                            src="https://www.tiktok.com/embed/v2/${match[1]}"
+                            style="width:100%; height:450px; border:none;"
+                            allowfullscreen="true"
+                            allow="encrypted-media;">
+                        </iframe>
+                    `;
+                } else {
+                    container.innerHTML = `<div class="p-4 text-center">
+                        <p class="text-gray-400 mb-2">TikTok requiere URL de video específica</p>
+                        <a href="${url}" target="_blank" class="text-yellow-400 hover:underline">Abrir en TikTok ↗</a>
+                    </div>`;
+                }
+            }
+        }
+
+        async function searchVideos() {
+            const query = document.getElementById('searchQuery').value.trim();
+            if (!query) { alert('Ingresa un término de búsqueda'); return; }
+            if (!apiKey) { alert('Configura tu API Key primero en el código'); return; }
+
+            const container = document.getElementById('searchResults');
+            container.innerHTML = '<p class="text-center py-4 text-sm animate-pulse text-yellow-500">🔍 Buscando...</p>';
+
+            try {
+                const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(query)}&key=${apiKey}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error.message);
+                
+                container.innerHTML = data.items.map(item => `
+                    <div class="flex gap-2 p-2 bg-gray-800/50 rounded hover:bg-gray-700 transition border border-gray-700/50">
+                        <img src="${item.snippet.thumbnails.default.url}" class="w-16 h-12 object-cover rounded flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <p class="playlist-item-title text-xs text-gray-200">${escapeHtml(item.snippet.title)}</p>
+                            <button onclick="addSearchResult('${escapeHtml(item.snippet.title.replace(/'/g, "\\'"))}', 'https://youtube.com/watch?v=${item.id.videoId}', this)" 
+                                class="result-add mt-1">➕ Agregar</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = `<p class="text-red-400 text-center py-4 text-sm">${e.message}</p>`;
+            }
+        }
+
+        function addSearchResult(title, url, btn) {
+            if (addToYTPlaylist(title, url)) {
+                btn.textContent = '✅ Agregado';
+                btn.disabled = true;
+                btn.style.background = '#4b5563';
+            }
+        }
+
+        function savePlaylists() {
+            localStorage.setItem('ytPlaylist', JSON.stringify(ytPlaylist));
+            localStorage.setItem('socialPlaylists', JSON.stringify(socialPlaylists));
+        }
+
+        function loadPlaylists() {
+            const yt = localStorage.getItem('ytPlaylist');
+            const social = localStorage.getItem('socialPlaylists');
+            if (yt) ytPlaylist = JSON.parse(yt);
+            if (social) socialPlaylists = JSON.parse(social);
+            renderYTPlaylist();
+            updateSocialCounts();
+            renderSocialPlaylist();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

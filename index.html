@@ -1,30 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHOCLOTUBE Manager</title>
+    <title>CHOCLOTUBE</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         :root {
-            --primary: #FFD700;         /* Amarillo maíz */
-            --primary-light: #FFEA00;   /* Amarillo más claro */
-            --primary-dark: #D4AF37;    /* Amarillo más oscuro para contraste */
-            --secondary: #4CAF50;       /* Verde hojas de maíz */
-            --secondary-light: #81C784; /* Verde más claro */
-            --background: rgba(0, 0, 0, 0.85);      /* Fondo negro con transparencia */
-            --surface: rgba(26, 26, 26, 0.8);         /* Gris muy oscuro con transparencia */
-            --surface-alt: rgba(45, 45, 45, 0.8);     /* Gris oscuro con transparencia */
-            --text: #e0e0e0;            /* Texto gris claro */
-            --text-secondary: #aaaaaa;  /* Texto secundario */
-            --text-on-yellow: #333333;  /* Texto sobre fondo amarillo */
-            --text-on-green: #FFFFFF;   /* Texto sobre fondo verde */
-            --error: #FFA000;           /* Amarillo oscuro para errores */
-            --success: #4CAF50;         /* Verde para éxito */
+            --primary: #FFD700;
+            /* Amarillo maíz */
+            --primary-light: #FFEA00;
+            /* Amarillo más claro */
+            --primary-dark: #D4AF37;
+            /* Amarillo más oscuro para contraste */
+            --secondary: #4CAF50;
+            /* Verde hojas de maíz */
+            --secondary-light: #81C784;
+            /* Verde más claro */
+            --background: rgba(0, 0, 0, 0.85);
+            /* Fondo negro con transparencia */
+            --surface: rgba(26, 26, 26, 0.8);
+            /* Gris muy oscuro con transparencia */
+            --surface-alt: rgba(45, 45, 45, 0.8);
+            /* Gris oscuro con transparencia */
+            --text: #e0e0e0;
+            /* Texto gris claro */
+            --text-secondary: #aaaaaa;
+            /* Texto secundario */
+            --text-on-yellow: #333333;
+            /* Texto sobre fondo amarillo */
+            --text-on-green: #FFFFFF;
+            /* Texto sobre fondo verde */
+            --error: #FFA000;
+            /* Amarillo oscuro para errores */
+            --success: #4CAF50;
+            /* Verde para éxito */
         }
 
-        * { box-sizing: border-box; }
-        
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background-image: url('https://raw.githubusercontent.com/CarlosDimare/CHOCLOTUBE/main/fondo.jpg');
             background-size: cover;
@@ -36,10 +53,22 @@
         }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
 
         .glass-panel {
             background-color: var(--surface);
@@ -56,12 +85,12 @@
             margin-bottom: 5px;
             color: var(--text);
         }
-        
+
         .result-duration {
             font-size: 13px;
             color: var(--text-secondary);
         }
-        
+
         .result-add {
             background: var(--secondary);
             color: var(--text-on-green);
@@ -73,16 +102,16 @@
             font-weight: 500;
             transition: all 0.3s ease;
         }
-        
+
         .result-add:hover {
             background: var(--secondary-light);
             transform: scale(1.05);
         }
-        
+
         .current-info {
             margin-top: 20px;
         }
-        
+
         .progress-container {
             width: 100%;
             height: 12px;
@@ -92,9 +121,9 @@
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .progress-bar {
             height: 100%;
             background: var(--primary);
@@ -102,7 +131,7 @@
             width: 0%;
             transition: width 0.1s linear;
         }
-        
+
         .delete-btn {
             background: var(--error);
             color: var(--text-on-yellow);
@@ -114,20 +143,20 @@
             margin-left: 10px;
             transition: all 0.3s ease;
         }
-        
+
         .delete-btn:hover {
             background: #dc2626;
             transform: scale(1.1);
         }
-        
+
         .now-playing {
             background: var(--surface-alt);
             border-radius: 16px;
             padding: 15px;
             margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
+
         .now-playing-title {
             font-size: 18px;
             font-weight: 600;
@@ -136,7 +165,7 @@
             word-break: break-word;
             line-height: 1.3;
         }
-        
+
         .now-playing-time {
             font-size: 16px;
             font-weight: 700;
@@ -146,31 +175,43 @@
         }
 
         /* Helper Classes */
-        .playing { 
-            background: linear-gradient(90deg, rgba(234, 179, 8, 0.2) 0%, rgba(234, 179, 8, 0.05) 100%) !important; 
+        .playing {
+            background: linear-gradient(90deg, rgba(234, 179, 8, 0.2) 0%, rgba(234, 179, 8, 0.05) 100%) !important;
             border-left: 4px solid var(--primary) !important;
         }
+
         .selected {
             background: rgba(255, 255, 255, 0.1) !important;
             border-left: 4px solid #3b82f6 !important;
         }
-        .playlist-item { 
-            transition: all 0.2s ease; 
+
+        .playlist-item {
+            transition: all 0.2s ease;
             border-left: 4px solid transparent;
-            background-color: rgba(255,255,255,0.02);
+            background-color: rgba(255, 255, 255, 0.02);
         }
-        .playlist-item:hover { 
-            background-color: rgba(255, 255, 255, 0.08); 
+
+        .playlist-item:hover {
+            background-color: rgba(255, 255, 255, 0.08);
             border-left-color: var(--primary);
         }
-        
+
         .logo-container img {
             filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.3));
         }
-        
-        .control-btn { transition: all 0.15s ease; }
-        .control-btn:hover { transform: scale(1.1); filter: brightness(1.2); }
-        .control-btn:active { transform: scale(0.95); }
+
+        .control-btn {
+            transition: all 0.15s ease;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
 
         .platform-badge {
             font-size: 10px;
@@ -178,19 +219,45 @@
             border-radius: 9999px;
             font-weight: 600;
         }
-        .badge-youtube { background: #ff0000; color: white; }
-        .badge-facebook { background: #1877f2; color: white; }
-        .badge-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; }
-        .badge-twitter { background: #000000; color: white; border: 1px solid #333; }
-        .badge-tiktok { background: #000000; color: #00f2ea; border: 1px solid #333; }
-        .badge-other { background: #6b7280; color: white; }
+
+        .badge-youtube {
+            background: #ff0000;
+            color: white;
+        }
+
+        .badge-facebook {
+            background: #1877f2;
+            color: white;
+        }
+
+        .badge-instagram {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: white;
+        }
+
+        .badge-twitter {
+            background: #000000;
+            color: white;
+            border: 1px solid #333;
+        }
+
+        .badge-tiktok {
+            background: #000000;
+            color: #00f2ea;
+            border: 1px solid #333;
+        }
+
+        .badge-other {
+            background: #6b7280;
+            color: white;
+        }
 
         .tab-active {
             background: var(--primary) !important;
             color: black !important;
             font-weight: bold;
         }
-        
+
         .trim-region {
             position: absolute;
             top: 0;
@@ -198,26 +265,27 @@
             background: rgba(234, 179, 8, 0.3);
             pointer-events: none;
         }
-        
+
         .time-input {
             width: 60px;
             text-align: center;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             border: 1px solid #444;
             color: white;
             border-radius: 4px;
         }
     </style>
 </head>
+
 <body class="min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Header -->
         <header class="text-center mb-8 logo-container">
-            <img src="https://raw.githubusercontent.com/CarlosDimare/CHOCLOTUBE/main/logo.jpg" 
-                 alt="CHOCLOTUBE" 
-                 class="h-32 mx-auto rounded-xl mb-4 border-2 border-yellow-600/50 shadow-2xl">
-            <div class="inline-block px-4 py-1 rounded-full bg-black/60 backdrop-blur text-yellow-500 text-xs tracking-widest uppercase border border-yellow-900/50">
-                Media Playlist Manager
+            <img src="https://raw.githubusercontent.com/CarlosDimare/CHOCLOTUBE/main/logo.jpg" alt="CHOCLOTUBE"
+                class="h-32 mx-auto rounded-xl mb-4 border-2 border-yellow-600/50 shadow-2xl">
+            <div
+                class="inline-block px-4 py-1 rounded-full bg-black/60 backdrop-blur text-yellow-500 text-xs tracking-widest uppercase border border-yellow-900/50">
+                Choclotube
             </div>
         </header>
 
@@ -228,17 +296,19 @@
                 <!-- Smart Input Section -->
                 <div class="glass-panel rounded-xl p-5 shadow-xl">
                     <h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-yellow-400">
-                        <span>📝</span> Input Inteligente
+                        <span>📝</span> Acá van los choclos de texto con enlaces
                     </h2>
-                    <p class="text-gray-400 text-xs mb-3">Pega texto con enlaces múltiples (YouTube, IG, TikTok, etc).</p>
+                    <p class="text-gray-400 text-xs mb-3">Pega texto con enlaces múltiples (YouTube, IG, TikTok, etc).
+                    </p>
                     <textarea id="smartInput" rows="5" placeholder="Pega aquí tu texto con enlaces mezclados..."
                         class="w-full bg-black/40 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-yellow-500 resize-none placeholder-gray-600 text-gray-200"></textarea>
-                    
+
                     <div id="detectedCounts" class="flex flex-wrap gap-2 mt-3 text-xs">
                         <span class="text-gray-500">0 links detectados</span>
                     </div>
-                    
-                    <button onclick="addFromSmartInput()" class="w-full mt-4 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold px-4 py-2.5 rounded-lg text-sm transition-all shadow-lg">
+
+                    <button onclick="addFromSmartInput()"
+                        class="w-full mt-4 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold px-4 py-2.5 rounded-lg text-sm transition-all shadow-lg">
                         ➕ Agregar a Playlists
                     </button>
                 </div>
@@ -252,7 +322,8 @@
                         <input type="text" id="searchQuery" placeholder="Buscar videos..."
                             onkeypress="if(event.key==='Enter')searchVideos()"
                             class="flex-1 bg-black/40 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500 text-gray-200">
-                        <button onclick="searchVideos()" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg text-sm font-bold text-white shadow-lg transition-colors">
+                        <button onclick="searchVideos()"
+                            class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg text-sm font-bold text-white shadow-lg transition-colors">
                             🔎
                         </button>
                     </div>
@@ -269,10 +340,12 @@
                         <span class="platform-badge badge-youtube">YouTube</span>
                         <h2 class="text-lg font-bold text-gray-100">Reproductor</h2>
                     </div>
-                    
+
                     <!-- YouTube Player -->
-                    <div id="ytPlayerContainer" class="bg-black rounded-lg overflow-hidden mb-4 shadow-2xl border border-gray-800 relative aspect-video">
-                        <div id="noMediaYT" class="absolute inset-0 flex items-center justify-center text-gray-600 text-center px-4">
+                    <div id="ytPlayerContainer"
+                        class="bg-black rounded-lg overflow-hidden mb-4 shadow-2xl border border-gray-800 relative aspect-video">
+                        <div id="noMediaYT"
+                            class="absolute inset-0 flex items-center justify-center text-gray-600 text-center px-4">
                             <div class="flex flex-col items-center">
                                 <span class="text-4xl mb-2 opacity-30">▶</span>
                                 <span class="text-sm">Selecciona un video</span>
@@ -280,15 +353,16 @@
                         </div>
                         <div id="youtubePlayer" class="absolute inset-0 w-full h-full"></div>
                     </div>
-                    
+
                     <!-- Now Playing Info (Styled) -->
                     <div id="nowPlayingYT" class="now-playing">
                         <div class="flex items-center gap-2 mb-1">
-                            <span id="ytStatusBadge" class="text-yellow-500 text-xs font-bold tracking-wider">⏸ LISTO</span>
+                            <span id="ytStatusBadge" class="text-yellow-500 text-xs font-bold tracking-wider">⏸
+                                LISTO</span>
                             <span id="ytIndexDisplay" class="text-xs text-gray-500 ml-auto font-mono"></span>
                         </div>
                         <p id="ytCurrentTitle" class="now-playing-title">Nada seleccionado</p>
-                        
+
                         <!-- Progress Bar -->
                         <div id="ytProgress" class="hidden">
                             <div class="progress-container" onclick="seekYouTube(event)" id="progressContainer">
@@ -301,53 +375,77 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Trim Controls -->
-                    <div id="trimControls" class="mb-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700 hidden">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-yellow-500 uppercase tracking-wide">✂️ Recortar</span>
-                            <button onclick="resetTrim()" class="text-xs text-gray-400 hover:text-white transition-colors">↺ Reset</button>
-                        </div>
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="flex items-center gap-1">
-                                <span class="text-xs text-green-400 font-bold">IN:</span>
-                                <input type="text" id="trimStart" value="0:00" 
-                                    class="time-input rounded px-1 py-0.5 text-xs focus:outline-none focus:border-green-500"
-                                    onchange="updateTrimFromInput('start')">
-                                <button onclick="setTrimFromCurrent('start')" class="text-xs bg-green-600/80 hover:bg-green-600 px-2 py-0.5 rounded text-white" title="Marcar actual">📍</button>
+                    <div id="trimWrapper" class="mb-4 hidden">
+                        <button onclick="toggleTrimUI()"
+                            class="flex items-center gap-2 text-xs font-bold text-yellow-500 uppercase tracking-wide mb-2 hover:text-yellow-400 transition-colors w-full">
+                            <span>✂️ Recortar / Editar</span>
+                            <span id="trimToggleIcon" class="transform transition-transform">▼</span>
+                        </button>
+                        <div id="trimControls" class="p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] text-gray-400">Ajusta el inicio y fin del video</span>
+                                <button onclick="resetTrim()"
+                                    class="text-xs text-gray-400 hover:text-white transition-colors">↺ Reset</button>
                             </div>
-                            <div class="flex items-center gap-1">
-                                <span class="text-xs text-red-400 font-bold">OUT:</span>
-                                <input type="text" id="trimEnd" value="0:00" 
-                                    class="time-input rounded px-1 py-0.5 text-xs focus:outline-none focus:border-red-500"
-                                    onchange="updateTrimFromInput('end')">
-                                <button onclick="setTrimFromCurrent('end')" class="text-xs bg-red-600/80 hover:bg-red-600 px-2 py-0.5 rounded text-white" title="Marcar actual">📍</button>
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="flex items-center gap-1">
+                                    <span class="text-xs text-green-400 font-bold">IN:</span>
+                                    <input type="text" id="trimStart" value="0:00"
+                                        class="time-input rounded px-1 py-0.5 text-xs focus:outline-none focus:border-green-500"
+                                        onchange="updateTrimFromInput('start')">
+                                    <button onclick="setTrimFromCurrent('start')"
+                                        class="text-xs bg-green-600/80 hover:bg-green-600 px-2 py-0.5 rounded text-white"
+                                        title="Marcar actual">📍</button>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <span class="text-xs text-red-400 font-bold">OUT:</span>
+                                    <input type="text" id="trimEnd" value="0:00"
+                                        class="time-input rounded px-1 py-0.5 text-xs focus:outline-none focus:border-red-500"
+                                        onchange="updateTrimFromInput('end')">
+                                    <button onclick="setTrimFromCurrent('end')"
+                                        class="text-xs bg-red-600/80 hover:bg-red-600 px-2 py-0.5 rounded text-white"
+                                        title="Marcar actual">📍</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span id="trimDuration" class="text-xs text-gray-500">Duración: --:--</span>
-                            <button onclick="saveTrim()" class="result-add" style="background: var(--primary); color: black;">💾 Guardar</button>
+                            <div class="flex items-center justify-between">
+                                <span id="trimDuration" class="text-xs text-gray-500">Duración: --:--</span>
+                                <button onclick="saveTrim()" class="result-add"
+                                    style="background: var(--primary); color: black;">💾 Guardar</button>
+                            </div>
                         </div>
                     </div>
-                    
+
                     <!-- Controls -->
                     <div class="flex justify-center items-center gap-6 mb-4">
-                        <button onclick="ytPlayPrevious()" class="control-btn bg-gray-700/80 hover:bg-gray-600 p-3 rounded-full text-xl border border-gray-600" title="Anterior">⏮️</button>
-                        <button onclick="ytTogglePlay()" id="ytPlayPauseBtn" class="control-btn bg-red-600 hover:bg-red-500 p-4 rounded-full text-2xl shadow-lg shadow-red-900/50 text-white" title="Play/Pause">▶️</button>
-                        <button onclick="ytPlayNext()" class="control-btn bg-gray-700/80 hover:bg-gray-600 p-3 rounded-full text-xl border border-gray-600" title="Siguiente">⏭️</button>
+                        <button onclick="ytPlayPrevious()"
+                            class="control-btn bg-gray-700/80 hover:bg-gray-600 p-3 rounded-full text-xl border border-gray-600"
+                            title="Anterior">⏮️</button>
+                        <button onclick="ytTogglePlay()" id="ytPlayPauseBtn"
+                            class="control-btn bg-red-600 hover:bg-red-500 p-4 rounded-full text-2xl shadow-lg shadow-red-900/50 text-white"
+                            title="Play/Pause">▶️</button>
+                        <button onclick="ytPlayNext()"
+                            class="control-btn bg-gray-700/80 hover:bg-gray-600 p-3 rounded-full text-xl border border-gray-600"
+                            title="Siguiente">⏭️</button>
                     </div>
-                    
+
                     <!-- YouTube Playlist -->
                     <div class="border-t border-gray-700/50 pt-4">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-sm font-bold text-gray-300">Playlist</span>
                             <div class="flex items-center gap-2">
-                                <span id="ytPlaylistCount" class="text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-mono">0</span>
-                                <button onclick="refreshYouTubeTitles()" class="text-blue-400 hover:text-blue-300 text-xs transition-colors" title="Actualizar títulos">🔄</button>
-                                <button onclick="clearYTPlaylist()" class="text-red-400 hover:text-red-300 text-xs transition-colors">🗑️</button>
+                                <span id="ytPlaylistCount"
+                                    class="text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-mono">0</span>
+                                <button onclick="refreshYouTubeTitles()"
+                                    class="text-blue-400 hover:text-blue-300 text-xs transition-colors"
+                                    title="Actualizar títulos">🔄</button>
+                                <button onclick="clearYTPlaylist()"
+                                    class="text-red-400 hover:text-red-300 text-xs transition-colors">🗑️</button>
                             </div>
                         </div>
-                        <input type="text" id="ytPlaylistSearch" placeholder="🔍 Filtrar..." oninput="renderYTPlaylist()"
+                        <input type="text" id="ytPlaylistSearch" placeholder="🔍 Filtrar..."
+                            oninput="renderYTPlaylist()"
                             class="w-full bg-black/30 border border-gray-700 rounded px-2 py-1 text-xs mb-3 focus:outline-none focus:border-red-500 text-gray-300">
                         <div id="ytPlaylistContainer" class="space-y-1 max-h-60 overflow-y-auto pr-1">
                             <p class="text-gray-500 text-center py-6 text-xs italic">No hay videos en la lista</p>
@@ -363,36 +461,42 @@
                         <span class="text-xl">📱</span>
                         <h2 class="text-lg font-bold text-gray-100">Redes Sociales</h2>
                     </div>
-                    
+
                     <!-- Platform Tabs -->
                     <div class="flex gap-1 mb-4 p-1 bg-black/40 rounded-lg">
-                        <button onclick="switchSocialTab('facebook')" id="tabFacebook" class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
+                        <button onclick="switchSocialTab('facebook')" id="tabFacebook"
+                            class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
                             FB <span id="fbCount" class="opacity-50 text-[10px] ml-1">0</span>
                         </button>
-                        <button onclick="switchSocialTab('instagram')" id="tabInstagram" class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
+                        <button onclick="switchSocialTab('instagram')" id="tabInstagram"
+                            class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
                             IG <span id="igCount" class="opacity-50 text-[10px] ml-1">0</span>
                         </button>
-                        <button onclick="switchSocialTab('twitter')" id="tabTwitter" class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
+                        <button onclick="switchSocialTab('twitter')" id="tabTwitter"
+                            class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
                             X <span id="twCount" class="opacity-50 text-[10px] ml-1">0</span>
                         </button>
-                        <button onclick="switchSocialTab('tiktok')" id="tabTiktok" class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
+                        <button onclick="switchSocialTab('tiktok')" id="tabTiktok"
+                            class="tab-btn flex-1 px-2 py-1.5 rounded text-xs text-gray-400 hover:text-white transition-colors">
                             TT <span id="ttCount" class="opacity-50 text-[10px] ml-1">0</span>
                         </button>
                     </div>
-                    
+
                     <!-- Social Embed Player -->
-                    <div id="socialEmbedContainer" class="bg-black rounded-lg overflow-hidden mb-4 min-h-[350px] flex items-center justify-center border border-gray-800">
+                    <div id="socialEmbedContainer"
+                        class="bg-black rounded-lg overflow-hidden mb-4 min-h-[350px] flex items-center justify-center border border-gray-800">
                         <div class="text-center px-6">
                             <div class="text-4xl mb-2 opacity-20">📱</div>
                             <p class="text-gray-500 text-sm">Selecciona un item</p>
                         </div>
                     </div>
-                    
+
                     <!-- Social Playlist -->
                     <div class="border-t border-gray-700/50 pt-4">
                         <div class="flex items-center justify-between mb-2">
                             <span id="socialPlaylistTitle" class="text-sm font-bold text-gray-300">Lista</span>
-                            <button onclick="clearCurrentSocialPlaylist()" class="text-red-400 hover:text-red-300 text-xs">🗑️</button>
+                            <button onclick="clearCurrentSocialPlaylist()"
+                                class="text-red-400 hover:text-red-300 text-xs">🗑️</button>
                         </div>
                         <div id="socialPlaylistContainer" class="space-y-1 max-h-60 overflow-y-auto pr-1">
                             <p class="text-gray-500 text-center py-6 text-xs italic">Lista vacía</p>
@@ -408,11 +512,12 @@
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script async src="//www.instagram.com/embed.js"></script>
     <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0" nonce="abc123"></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0"
+        nonce="abc123"></script>
 
     <script>
         // ============ CONFIGURACIÓN ============
-        const apiKey = "AIzaSyBOgvS0tlbHy7cokWzX_jdzswGu9Ffs4fU"; 
+        const apiKey = "AIzaSyBOgvS0tlbHy7cokWzX_jdzswGu9Ffs4fU";
 
         // ============ STATE ============
         let ytPlaylist = [];
@@ -452,20 +557,20 @@
         function createYouTubePlayer(videoId, autoplay = false, startTime = 0) {
             document.getElementById('noMediaYT').classList.add('hidden');
             document.getElementById('ytProgress').classList.remove('hidden');
-            document.getElementById('trimControls').classList.remove('hidden');
-            
+            document.getElementById('trimWrapper').classList.remove('hidden');
+
             if (ytPlayer) {
                 ytPlayer.destroy();
             }
-            
+
             ytPlayer = new YT.Player('youtubePlayer', {
                 height: '100%',
                 width: '100%',
                 videoId: videoId,
-                playerVars: { 
-                    'autoplay': autoplay ? 1 : 0, 
-                    'controls': 0, 
-                    'rel': 0, 
+                playerVars: {
+                    'autoplay': autoplay ? 1 : 0,
+                    'controls': 0,
+                    'rel': 0,
                     'modestbranding': 1,
                     'start': Math.floor(startTime)
                 },
@@ -492,7 +597,7 @@
         }
 
         function onYTStateChange(event) {
-            switch(event.data) {
+            switch (event.data) {
                 case YT.PlayerState.PLAYING:
                     ytIsPlaying = true;
                     updateYTButton(true);
@@ -517,7 +622,7 @@
 
         function updateStatusBadge(state) {
             const badge = document.getElementById('ytStatusBadge');
-            switch(state) {
+            switch (state) {
                 case 'playing':
                     badge.textContent = '▶ REPRODUCIENDO';
                     badge.className = 'text-green-400 text-xs font-bold';
@@ -545,21 +650,21 @@
                 if (!ytPlayer?.getCurrentTime) return;
                 const current = ytPlayer.getCurrentTime();
                 const duration = ytPlayer.getDuration();
-                
+
                 if (duration > 0) {
                     const item = ytPlaylist[ytCurrentIndex];
                     const trimEnd = item?.trimEnd || duration;
-                    
+
                     if (current >= trimEnd && ytIsPlaying) {
                         ytPlayer.pauseVideo();
                         ytPlayNext();
                         return;
                     }
-                    
+
                     document.getElementById('ytProgressBar').style.width = (current / duration * 100) + '%';
                     document.getElementById('ytCurrentTime').textContent = formatTime(current);
                     document.getElementById('ytDuration').textContent = formatTime(duration);
-                    
+
                     updateTrimRegionDisplay();
                 }
             }, 250);
@@ -567,7 +672,7 @@
 
         function stopProgressUpdate() { if (progressInterval) { clearInterval(progressInterval); progressInterval = null; } }
 
-        function formatTime(s) { 
+        function formatTime(s) {
             const mins = Math.floor(s / 60);
             const secs = Math.floor(s % 60);
             return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -595,7 +700,7 @@
             const item = ytPlaylist[ytCurrentIndex];
             currentTrimStart = item?.trimStart || 0;
             currentTrimEnd = item?.trimEnd || videoDuration;
-            
+
             document.getElementById('trimStart').value = formatTime(currentTrimStart);
             document.getElementById('trimEnd').value = formatTime(currentTrimEnd);
             updateTrimDuration();
@@ -641,7 +746,7 @@
         function setTrimFromCurrent(type) {
             if (!ytPlayer?.getCurrentTime) return;
             const current = ytPlayer.getCurrentTime();
-            
+
             if (type === 'start') {
                 currentTrimStart = current;
                 document.getElementById('trimStart').value = formatTime(current);
@@ -662,14 +767,25 @@
             updateTrimRegionDisplay();
         }
 
+        function toggleTrimUI() {
+            const controls = document.getElementById('trimControls');
+            const icon = document.getElementById('trimToggleIcon');
+            controls.classList.toggle('hidden');
+            if (controls.classList.contains('hidden')) {
+                icon.style.transform = 'rotate(-90deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
         function saveTrim() {
             if (ytCurrentIndex < 0) return;
-            
+
             ytPlaylist[ytCurrentIndex].trimStart = currentTrimStart;
             ytPlaylist[ytCurrentIndex].trimEnd = currentTrimEnd;
             savePlaylists();
             renderYTPlaylist();
-            
+
             alert(`✅ Recorte guardado: ${formatTime(currentTrimStart)} - ${formatTime(currentTrimEnd)}`);
         }
 
@@ -679,10 +795,10 @@
             ytCurrentIndex = index;
             ytSelectedIndex = index;
             const item = ytPlaylist[index];
-            
+
             document.getElementById('ytCurrentTitle').textContent = item.title;
             document.getElementById('ytIndexDisplay').textContent = `${index + 1} de ${ytPlaylist.length}`;
-            
+
             const videoId = extractYouTubeId(item.url);
             if (videoId && ytReady) {
                 createYouTubePlayer(videoId, false, item.trimStart || 0);
@@ -695,10 +811,10 @@
             ytCurrentIndex = index;
             ytSelectedIndex = index;
             const item = ytPlaylist[index];
-            
+
             document.getElementById('ytCurrentTitle').textContent = item.title;
             document.getElementById('ytIndexDisplay').textContent = `${index + 1} de ${ytPlaylist.length}`;
-            
+
             const videoId = extractYouTubeId(item.url);
             if (videoId && ytReady) {
                 createYouTubePlayer(videoId, true, item.trimStart || 0);
@@ -763,7 +879,7 @@
             const links = parseLinksFromText(document.getElementById('smartInput').value);
             const counts = { youtube: 0, facebook: 0, instagram: 0, twitter: 0, tiktok: 0, other: 0 };
             links.forEach(link => counts[classifyLink(link)]++);
-            
+
             const container = document.getElementById('detectedCounts');
             if (links.length === 0) {
                 container.innerHTML = '<span class="text-gray-500">0 links detectados</span>';
@@ -788,7 +904,7 @@
             btn.disabled = true;
 
             const classified = { youtube: [], facebook: [], instagram: [], twitter: [], tiktok: [] };
-            
+
             links.forEach(url => {
                 const platform = classifyLink(url);
                 if (platform !== 'other') {
@@ -829,7 +945,9 @@
             btn.disabled = false;
 
             const total = Object.values(classified).reduce((a, b) => a + b.length, 0);
-            alert(`✅ ${total} links agregados!`);
+
+            // alert(`✅ ${total} links agregados!`); // Silent loading requested
+            console.log(`✅ ${total} links agregados!`);
         }
 
         async function fetchYouTubeTitles(videoIds) {
@@ -844,9 +962,9 @@
         // ============ YOUTUBE PLAYLIST ============
         function addToYTPlaylist(title, url) {
             if (ytPlaylist.some(item => item.url === url)) return false;
-            ytPlaylist.push({ 
-                id: Date.now() + Math.random(), 
-                title, 
+            ytPlaylist.push({
+                id: Date.now() + Math.random(),
+                title,
                 url,
                 trimStart: 0,
                 trimEnd: null
@@ -876,7 +994,8 @@
                 if (ytPlayer) ytPlayer.destroy();
                 document.getElementById('noMediaYT').classList.remove('hidden');
                 document.getElementById('ytProgress').classList.add('hidden');
-                document.getElementById('trimControls').classList.add('hidden');
+
+                document.getElementById('trimWrapper').classList.add('hidden');
                 document.getElementById('ytCurrentTitle').textContent = 'Nada seleccionado';
                 document.getElementById('ytIndexDisplay').textContent = '';
                 updateStatusBadge('ready');
@@ -902,19 +1021,19 @@
                 const isSelected = realIndex === ytCurrentIndex && !ytIsPlaying;
                 const isNext = realIndex === nextIndex && ytCurrentIndex !== -1;
                 const hasTrim = item.trimStart > 0 || (item.trimEnd && item.trimEnd < videoDuration);
-                
+
                 let statusClass = '';
                 if (isPlaying) statusClass = 'playing';
                 else if (isSelected) statusClass = 'selected';
                 else if (isNext) statusClass = 'next-up';
-                
+
                 let badge = '#' + (realIndex + 1);
                 if (isPlaying) badge = '▶';
                 else if (isSelected) badge = '⏸';
                 else if (isNext) badge = '⏭';
-                
+
                 const trimInfo = hasTrim ? `<span class="text-yellow-400 text-[10px]">✂️ ${formatTime(item.trimStart)} - ${formatTime(item.trimEnd || 0)}</span>` : '';
-                
+
                 return `
                     <div class="playlist-item flex items-start gap-2 p-2 rounded cursor-pointer ${statusClass}" 
                          onclick="ytSelectItem(${realIndex})">
@@ -934,19 +1053,19 @@
 
         async function refreshYouTubeTitles() {
             if (!apiKey) { alert('Configura tu API Key primero en el código'); return; }
-            
+
             const genericItems = ytPlaylist.filter(item => item.title.startsWith('YouTube Video ('));
             if (genericItems.length === 0) { alert('Todos los videos ya tienen títulos reales'); return; }
 
             try {
                 const videoIds = genericItems.map(item => extractYouTubeId(item.url)).filter(id => id);
                 const titles = await fetchYouTubeTitles(videoIds.join(','));
-                
+
                 ytPlaylist.forEach(item => {
                     const id = extractYouTubeId(item.url);
                     if (id && titles[id]) item.title = titles[id];
                 });
-                
+
                 savePlaylists();
                 renderYTPlaylist();
                 if (ytCurrentIndex >= 0) {
@@ -961,7 +1080,7 @@
         // ============ SOCIAL MEDIA PLAYLISTS ============
         function addToSocialPlaylist(platform, url) {
             if (socialPlaylists[platform].some(item => item.url === url)) return false;
-            
+
             let title = url;
             try {
                 const urlObj = new URL(url);
@@ -978,8 +1097,8 @@
                     const match = path.match(/@([^\/]+)/);
                     title = match ? `TikTok de @${match[1]}` : 'TikTok Video';
                 }
-            } catch (e) {}
-            
+            } catch (e) { }
+
             socialPlaylists[platform].push({ id: Date.now() + Math.random(), title, url });
             savePlaylists();
             updateSocialCounts();
@@ -1013,12 +1132,12 @@
             currentSocialTab = platform;
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('tab-active'));
             document.getElementById('tab' + platform.charAt(0).toUpperCase() + platform.slice(1)).classList.add('tab-active');
-            
+
             const names = { facebook: '📘 Facebook', instagram: '📷 Instagram', twitter: '🐦 Twitter/X', tiktok: '🎵 TikTok' };
             document.getElementById('socialPlaylistTitle').textContent = names[platform];
-            
+
             renderSocialPlaylist();
-            
+
             if (currentSocialIndex[platform] >= 0 && socialPlaylists[platform][currentSocialIndex[platform]]) {
                 embedSocialMedia(platform, socialPlaylists[platform][currentSocialIndex[platform]].url);
             } else {
@@ -1036,7 +1155,7 @@
         function renderSocialPlaylist() {
             const container = document.getElementById('socialPlaylistContainer');
             const playlist = socialPlaylists[currentSocialTab];
-            
+
             if (playlist.length === 0) {
                 container.innerHTML = '<p class="text-gray-500 text-center py-6 text-xs italic">Lista vacía</p>';
                 return;
@@ -1044,7 +1163,7 @@
 
             const badgeClass = {
                 facebook: 'badge-facebook',
-                instagram: 'badge-instagram', 
+                instagram: 'badge-instagram',
                 twitter: 'badge-twitter',
                 tiktok: 'badge-tiktok'
             }[currentSocialTab];
@@ -1060,7 +1179,10 @@
                             <p class="playlist-item-title mt-1">${escapeHtml(item.title)}</p>
                             <p class="text-[10px] text-gray-500 truncate">${escapeHtml(item.url)}</p>
                         </div>
-                        <button onclick="event.stopPropagation(); removeFromSocialPlaylist('${currentSocialTab}', ${item.id})" class="delete-btn">✖️</button>
+                        <div class="flex flex-col gap-1">
+                            <button onclick="event.stopPropagation(); editSocialTitle('${currentSocialTab}', ${item.id})" class="text-blue-400 hover:text-blue-300 text-xs p-1" title="Editar título">✏️</button>
+                            <button onclick="event.stopPropagation(); removeFromSocialPlaylist('${currentSocialTab}', ${item.id})" class="delete-btn m-0">✖️</button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -1074,14 +1196,44 @@
             renderSocialPlaylist();
         }
 
+
+
+        function editSocialTitle(platform, id) {
+            const item = socialPlaylists[platform].find(i => i.id === id);
+            if (!item) return;
+            const newTitle = prompt('Editar título:', item.title);
+            if (newTitle !== null && newTitle.trim() !== '') {
+                item.title = newTitle.trim();
+                savePlaylists();
+                renderSocialPlaylist();
+            }
+        }
+
         function embedSocialMedia(platform, url) {
             const container = document.getElementById('socialEmbedContainer');
-            
+            container.innerHTML = ''; // Clear previous content
+
             if (platform === 'twitter') {
-                const match = url.match(/status\/(\d+)/);
+                // Handle x.com and twitter.com
+                const cleanUrl = url.replace('x.com', 'twitter.com');
+                const match = cleanUrl.match(/status\/(\d+)/);
                 if (match) {
-                    container.innerHTML = `<blockquote class="twitter-tweet" data-theme="dark"><a href="${url}"></a></blockquote>`;
-                    if (window.twttr?.widgets) twttr.widgets.load(container);
+                    const blockquote = document.createElement('blockquote');
+                    blockquote.className = 'twitter-tweet';
+                    blockquote.setAttribute('data-theme', 'dark');
+                    blockquote.innerHTML = `<a href="${cleanUrl}"></a>`;
+                    container.appendChild(blockquote);
+
+                    if (window.twttr && window.twttr.widgets) {
+                        window.twttr.widgets.load(container);
+                    } else {
+                        // Retry if library not ready
+                        setTimeout(() => {
+                            if (window.twttr && window.twttr.widgets) window.twttr.widgets.load(container);
+                        }, 1000);
+                    }
+                } else {
+                    container.innerHTML = `<div class="p-4 text-center"><p class="text-gray-400">URL de Twitter inválida</p></div>`;
                 }
             } else if (platform === 'instagram') {
                 let videoId = '';
@@ -1092,7 +1244,7 @@
 
                 if (videoId) {
                     container.innerHTML = `
-                        <div style="display: flex; justify-content: center;">
+                        <div style="display: flex; justify-content: center; width: 100%;">
                             <iframe 
                                 src="https://www.instagram.com/p/${videoId}/embed/captioned/" 
                                 width="100%" 
@@ -1106,7 +1258,7 @@
                         </div>
                     `;
                 } else {
-                     container.innerHTML = `
+                    container.innerHTML = `
                         <div class="p-4 text-center">
                             <p class="text-gray-400 mb-2">No se pudo detectar ID del video</p>
                             <a href="${url}" target="_blank" class="text-yellow-400 hover:underline">Abrir en Instagram ↗</a>
@@ -1149,9 +1301,9 @@
                 const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(query)}&key=${apiKey}`;
                 const response = await fetch(url);
                 const data = await response.json();
-                
+
                 if (data.error) throw new Error(data.error.message);
-                
+
                 container.innerHTML = data.items.map(item => `
                     <div class="flex gap-2 p-2 bg-gray-800/50 rounded hover:bg-gray-700 transition border border-gray-700/50">
                         <img src="${item.snippet.thumbnails.default.url}" class="w-16 h-12 object-cover rounded flex-shrink-0">
@@ -1197,4 +1349,5 @@
         }
     </script>
 </body>
+
 </html>
